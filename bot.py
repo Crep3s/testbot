@@ -33,7 +33,7 @@ logging.basicConfig(level=logging.INFO)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 ADMIN_IDS = {917781997}
-GROUP_CHAT_ID = -1001214853632
+GROUP_CHAT_ID = -1002245200459
 
 ITEM_CATALOG = {
     "champion_crown": {
