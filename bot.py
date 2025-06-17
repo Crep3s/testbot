@@ -913,7 +913,7 @@ async def main():
     scheduler = AsyncIOScheduler(timezone=kyiv_tz)
     scheduler.add_job(reset_season, trigger='cron', day=1, hour=0, minute=0)
     scheduler.add_job(save_season_snapshot, trigger='cron', day=1, hour=0, minute=1)
-    scheduler.add_job(update_points, trigger='cron', hour=7, minute=59)
+    scheduler.add_job(update_points, trigger='cron', hour=7, minute=58)
     scheduler.add_job(send_daily_task, trigger='cron', hour=8, minute=0, args=[app])
     scheduler.start()
 
