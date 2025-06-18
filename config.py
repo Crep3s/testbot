@@ -4,7 +4,7 @@ import pytz
 # --- Telegram ---
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_IDS = {917781997}  # Множество для быстрой проверки
-GROUP_CHAT_ID = -1001214853632
+GROUP_CHAT_ID = -1002245200459
 
 # --- Пути к файлам ---
 DATA_DIR = "/data"
