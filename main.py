@@ -52,7 +52,7 @@ def main():
     
     # Общие обработчики
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & ~filters.COMMAND, admin_handlers.admin_message_handler))
-    app.add_handler(MessageHandler(filters.ALL & filters.Chat.GROUP, general_handlers.track_activity))
+    app.add_handler(MessageHandler(filters.ALL & filters.ChatType.GROUP, general_handlers.track_activity))
     
     # --- Настройка планировщика ---
     scheduler = AsyncIOScheduler(timezone=config.TIMEZONE)
