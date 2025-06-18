@@ -38,7 +38,7 @@ def main():
     
     # Пользовательские команды
     app.add_handler(CommandHandler("start", user_handlers.start))
-    app.add_handler(CommandHandler("profile", user_handlers.profile_command))
+    app.add_handler(CommandHandler("profile", user_handlers.profile))
     app.add_handler(CommandHandler("inventory", user_handlers.inventory_command))
     app.add_handler(CommandHandler("join", user_handlers.join))
     app.add_handler(CommandHandler("leave", user_handlers.leave))
