@@ -41,11 +41,11 @@ async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data_manager.save_json(season_cache, config.SEASON_CACHE_FILE)
 
     data[chat_id][user_id] = {
-        "name": user.full_name, "points": points,
+        "name": user.first_name, "points": points,
         "last_delta": 0, "medals": medals
     }
     data_manager.save_json(data, config.LEADERBOARD_FILE)
-    await update.message.reply_text(f"\u200E{user.full_name} приєднався до гри! Песюн: {points} см")
+    await update.message.reply_text(f"\u200E{user.first_name} приєднався до гри! Песюн: {points} см")
 
 
 async def leave(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -64,9 +64,9 @@ async def leave(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         lifetime = data_manager.load_json(config.LIFETIME_FILE)
         user_lifetime = lifetime.setdefault(user_id, {
-            "name": user.full_name, "medals": {"gold": 0, "silver": 0, "bronze": 0}
+            "name": user.first_name, "medals": {"gold": 0, "silver": 0, "bronze": 0}
         })
-        user_lifetime["name"] = user.full_name
+        user_lifetime["name"] = user.first_name
         user_lifetime.setdefault("total_points", 0)
         user_lifetime["total_points"] += leaderboard_user.get("points", 0)
 
@@ -83,7 +83,7 @@ async def leave(update: Update, context: ContextTypes.DEFAULT_TYPE):
         data_manager.save_json(season_cache, config.SEASON_CACHE_FILE)
         data_manager.save_json(data, config.LEADERBOARD_FILE)
 
-        await update.message.reply_text(f"\u200E{user.full_name} вийшов з гри.")
+        await update.message.reply_text(f"\u200E{user.first_name} вийшов з гри.")
     else:
         await update.message.reply_text("Тебе немає в грі.")
 
@@ -106,7 +106,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         f"🙎‍♂️ Ваш профіль\n\n"
-        f"{medals} {utils.safe_username(update.effective_user.full_name)}\n"
+        f"{medals} {utils.safe_username(update.effective_user.first_name)}\n"
         f"🔢 Усього сантиметрів: {total_points} см\n"
         f"✅ Завдань виконано: {lifetime.get('total_tasks_completed', 0)}\n"
         f"❌ Завдань пропущено: {lifetime.get('failed_tasks', 0)}\n"
