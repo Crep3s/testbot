@@ -12,23 +12,16 @@ import game_logic
 import scheduler_tasks
 from handlers import user_handlers, admin_handlers, general_handlers
 
-# Применяем nest_asyncio для совместимости с некоторыми средами
-# Это важно для сред, где asyncio уже может быть запущен (например, в Jupyter или некоторых фреймворках)
-# В данном случае, возможно, это не совсем нужно, но оставим на всякий случай.
 nest_asyncio.apply()
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 async def main():
     if not config.BOT_TOKEN:
         raise ValueError("BOT_TOKEN не встановлено в конфігурації!")
 
-    # --- Сборка приложения ---
     app = ApplicationBuilder().token(config.BOT_TOKEN).build()
 
-    # --- Регистрация обработчиков ---
-    # Conversation handler для команды /season
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("season", user_handlers.season_entry)],
         states={
@@ -44,8 +37,9 @@ async def main():
     app.add_handler(CommandHandler("leaderboard", user_handlers.show_leaderboard_private))
     app.add_handler(CommandHandler("join", user_handlers.join))
     app.add_handler(CommandHandler("leave", user_handlers.leave))
+    app.add_handler(CommandHandler("version", user_handlers.version_command))
     app.add_handler(conv_handler)
-
+    
     # Админские команды
     app.add_handler(CommandHandler("addpoints", admin_handlers.modify_points))
     app.add_handler(CommandHandler("additem", admin_handlers.add_item))
