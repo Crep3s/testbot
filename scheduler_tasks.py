@@ -136,7 +136,7 @@ async def reset_season(app):
                 f"Серія: {stats['streak_max']} днів"
             )
             points = user.get("points", 0)
-            text += f"\u200E{emoji} \u200E{safe_username(user['name'])} — {points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
+            text += f"\u200E{emoji} \u200E{user['name']} — {points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
     
         for uid, user in board.items():
             lifetime.setdefault(uid, {}).setdefault("total_points", 0)
