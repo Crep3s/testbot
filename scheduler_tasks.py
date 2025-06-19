@@ -85,8 +85,12 @@ async def reset_season(app):
 
     for chat_id_str, board in leaderboard.items():
         chat_id = str(chat_id_str)
-        current_season_num = seasons.get(chat_id, {}).get("current_season", 0) + 1
-        
+        if chat_id not in seasons:
+            seasons[chat_id] = {
+                "current_season": 0,
+                "history": []
+            }
+        current_season_num = seasons[chat_id]["current_season"] + 1
         scores = {uid: {"points": u.get("points", 0), "name": u.get("name", "Невідомий")} for uid, u in board.items()}
         sorted_scores = sorted(scores.items(), key=lambda item: item[1]["points"], reverse=True)
         
