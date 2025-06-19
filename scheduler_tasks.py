@@ -105,7 +105,8 @@ async def reset_season(app):
             user = board.get(uid)
             if not user: continue
 
-            user.setdefault("medals", {})[medal] = user["medals"].get(medal, 0) + 1
+            lifetime.setdefault(uid, {}).setdefault("medals", {})
+            lifetime[uid]["medals"][medal] = lifetime[uid]["medals"].get(medal, 0) + 1
             item_id = config.ITEM_REWARDS[medal]
             inventory.setdefault(uid, []).append(item_id)
             item = config.ITEM_CATALOG[item_id]
