@@ -27,7 +27,9 @@ async def track_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     leaderboard = data_manager.load_json(config.LEADERBOARD_FILE)
 
     if chat_id not in tasks or user_id not in leaderboard.get(chat_id, {}): return
-
+    if chat_id in leaderboard and user_id in leaderboard[chat_id]:
+            leaderboard[chat_id][user_id]["name"] = update.message.from_user.first_name
+            data_manager.save_json(leaderboard, config.LEADERBOARD_FILE)
     task = tasks[chat_id]
     progress = data_manager.load_json(config.PROGRESS_FILE)
     key = f"{chat_id}:{user_id}"
