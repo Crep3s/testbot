@@ -41,6 +41,7 @@ async def main():
     app.add_handler(CommandHandler("start", user_handlers.start))
     app.add_handler(CommandHandler("profile", user_handlers.profile))
     app.add_handler(CommandHandler("inventory", user_handlers.inventory_command))
+    app.add_handler(CommandHandler("leaderboard", user_handlers.show_leaderboard_private))
     app.add_handler(CommandHandler("join", user_handlers.join))
     app.add_handler(CommandHandler("leave", user_handlers.leave))
     app.add_handler(conv_handler)
@@ -58,10 +59,10 @@ async def main():
 
     # --- Настройка планировщика ---
     scheduler = AsyncIOScheduler(timezone=config.TIMEZONE)
-    scheduler.add_job(scheduler_tasks.reset_season, 'cron', day=1, hour=0, minute=0, args=[app])
-    scheduler.add_job(game_logic.save_season_snapshot, 'cron', day=1, hour=0, minute=1)
-    scheduler.add_job(scheduler_tasks.update_points, 'cron', hour='7', minute=59)
-    scheduler.add_job(scheduler_tasks.send_daily_task, 'cron', hour=8, minute=0, args=[app])
+    scheduler.add_job(scheduler_tasks.reset_season, 'interval', seconds=175, args=[app])
+    scheduler.add_job(game_logic.save_season_snapshot, 'interval', seconds=177)
+    scheduler.add_job(scheduler_tasks.update_points, 'interval', seconds=59)
+    scheduler.add_job(scheduler_tasks.send_daily_task, 'interval', seconds=60, args=[app])
 
     scheduler.start()
     logging.info("🎉 Бот запущен!")
