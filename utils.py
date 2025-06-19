@@ -3,7 +3,7 @@ import config
 import data_manager
 
 def get_main_keyboard():
-    buttons = [["/profile", "/inventory"], ["/season"]]
+    buttons = [["/profile", "/inventory"], ["/season"], ["/leaderboard"]]
     return ReplyKeyboardMarkup(buttons, resize_keyboard=True)
 
 def check_registered(user_id):
