@@ -30,11 +30,23 @@ async def send_daily_task(app):
     tasks = data_manager.load_json(config.TASKS_FILE)
     progress = data_manager.load_json(config.PROGRESS_FILE)
     
-    # ... (список task_list)
     task_list = [
         {"description": "Відправити 3 повідомлення", "type": "messages", "goal": 3, "bonus": 10},
         {"description": "Відправити голосове повідомлення тривалістю не менше 10 секунд", "type": "voice", "goal": 10, "bonus": 15},
-        # ... и все остальные задачи
+        {"description": "Відправити відеоповідомлення тривалістю не менше 5 секунд", "type": "video_note", "goal": 5, "bonus": 15},
+        {"description": "Відправити 2 медіафайли", "type": "media", "goal": 2, "bonus": 10},
+        {"description": "Відправити стікер", "type": "sticker", "goal": 1, "bonus": 7},
+        {"description": "Надіслати повідомлення з емодзі 😈", "type": "emoji", "goal": 1, "emoji": "😈", "bonus": 7},
+        {"description": "Надіслати повідомлення з емодзі 🥵", "type": "emoji", "goal": 1, "emoji": "🥵", "bonus": 7},
+        {"description": "Надіслати повідомлення з емодзі 🤯", "type": "emoji", "goal": 1, "emoji": "🤯", "bonus": 7},
+        {"description": "Відправити хоча б одне фото", "type": "photo", "goal": 1, "bonus": 10},
+        {"description": "Надіслати відео", "type": "video", "goal": 1, "bonus": 15},
+        {"description": "Надіслати GIF", "type": "animation", "goal": 1, "bonus": 12},
+        {"description": "Задати 2 запитання", "type": "question", "goal": 2, "bonus": 12},
+        {"description": "Написати повідомлення, яке містить слово «смегма»", "type": "keyword", "subtype": "смегма", "goal": 1, "bonus": 7},
+        {"description": "Надіслати повідомлення довжиною понад 30 символів", "type": "long_message", "goal": 1, "bonus": 10},
+        {"description": "Надіслати відповідь на чуже повідомлення", "type": "reply", "goal": 1, "bonus": 10},
+        {"description": "Надіслати зображення з підписом", "type": "photo_with_caption", "goal": 1, "bonus": 15}
     ]
 
     for chat_id_str in leaderboard:
@@ -92,20 +104,51 @@ async def reset_season(app):
             user.setdefault("medals", {})[medal] = user["medals"].get(medal, 0) + 1
             item_id = config.ITEM_REWARDS[medal]
             inventory.setdefault(uid, []).append(item_id)
-            
-            lt = lifetime.setdefault(uid, {})
-            prev = snapshot.get(str(uid), {})
+            item = config.ITEM_CATALOG[item_id]
+
+            lt = lifetime.setdefault(uid, {
+                "total_tasks_completed": 0,
+                "days_played": 0,
+                "streak_max": 0
+            })
+            prev = snapshot.get(str(uid), {
+                "total_tasks_completed": 0,
+                "days_played": 0,
+                "streak_max": 0
+            })
+
             stats = {
                 "total_tasks_completed": lt.get("total_tasks_completed", 0) - prev.get("total_tasks_completed", 0),
                 "days_played": lt.get("days_played", 0) - prev.get("days_played", 0),
                 "streak_max": lt.get("streak_max", 0)
             }
-            
-            season_data["winners"].append({"user_id": uid, "name": user.get("name"), "medal": medal, "stats": stats, "points": user.get("points", 0)})
-            
-            # ... (Формирование текста сообщения, как в оригинале)
+            season_data["winners"].append({
+                "user_id": uid,
+                "name": user.get("name", "Невідомий"),
+                "medal": medal,
+                "stats": stats,
+                "points": user.get("points", 0)
+            })
+            emoji = config.MEDAL_EMOJIS.get(medal, "")
+            stats_summary = (
+                f"  🧾 Завдань: {stats['total_tasks_completed']} | "
+                f"Днів активності: {stats['days_played']} | "
+                f"Серія: {stats['streak_max']} днів"
+            )
+            points = user.get("points", 0)
+            text += f"\u200E{emoji} \u200E{safe_username(user['name'])} — {points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
+    
+        for uid, user in board.items():
+            lifetime.setdefault(uid, {}).setdefault("total_points", 0)
+            lifetime[uid]["total_points"] += user.get("points", 0)
 
-        # ... (Обновление lifetime, обнуление очков, сохранение данных)
+        for user in board.values():
+            user["points"] = 0
+            user["last_delta"] = 0
+            user["last_points"] = 0
+
+        seasons[chat_id]["current_season"] = current
+        seasons[chat_id]["history"].append(season_data)
         await app.bot.send_message(chat_id=int(chat_id), text=text)
 
     data_manager.save_json(leaderboard, config.LEADERBOARD_FILE)
