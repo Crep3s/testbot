@@ -147,7 +147,7 @@ async def reset_season(app):
             user["last_delta"] = 0
             user["last_points"] = 0
 
-        seasons[chat_id]["current_season"] = current
+        seasons[chat_id]["current_season"] = current_season_num
         seasons[chat_id]["history"].append(season_data)
         await app.bot.send_message(chat_id=int(chat_id), text=text)
 
