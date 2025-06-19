@@ -22,26 +22,29 @@ def safe_username(name):
     return name
 
 def format_leaderboard(chat_data):
-    sorted_users = sorted(chat_data.values(), key=lambda x: x["points"], reverse=True)
+    sorted_users = sorted(chat_data.items(), key=lambda x: x[1]["points"], reverse=True)
     lines = ["🏆 *Таблиця лідерів:*"]
-    
-    for i, user in enumerate(sorted_users, 1):
+    lifetime = data_manager.load_json(config.LIFETIME_FILE)
+
+    for i, (user_id, user) in enumerate(sorted_users, 1):
         points = user.get("points", 0)
         last = user.get("last_points")
+        medals = format_medals(lifetime.get(user_id, {}).get("medals", {}))
         delta_str = ""
 
         if last is not None:
             delta = points - last
-            if delta > 0: delta_str = f" (🔺+{delta})"
-            elif delta < 0: delta_str = f" (🔻{delta})"
+            if delta > 0:
+                delta_str = f" (🔺+{delta})"
+            elif delta < 0:
+                delta_str = f" (🔻{delta})"
 
-        name = user["name"]
-        medals = format_medals(user.get("medals", {}))
+        name = user.get("name", "Невідомий")
 
         if points == 0:
             lines.append(f"\u200E{i}. {medals} *{name}* \u200E не має песюна")
         else:
             lines.append(f"\u200E{i}. {medals} *{name}* — \u200E {points} см{delta_str}")
-    
+
     lines.append("\n#leaderboard")
     return "\n".join(lines)
