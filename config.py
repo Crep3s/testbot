@@ -21,6 +21,7 @@ LAST_ACTIVE_FILE = os.path.join(DATA_DIR, "last_active.json")
 SEASON_CACHE_FILE = os.path.join(DATA_DIR, "season_cache.json")
 SEASON_START_SNAPSHOT_FILE = os.path.join(DATA_DIR, "season_start.json")
 
+BOT_VERSION = "0.1.1-beta"
 
 # --- Игровые константы ---
 ITEM_CATALOG = {
