@@ -51,8 +51,8 @@ async def send_daily_task(app):
 
     for chat_id_str in leaderboard:
         chat_id = str(chat_id_str)
-        task = random.choice(task_list)
-
+      #  task = random.choice(task_list)
+        task = "description": "Написати повідомлення, яке містить слово «смегма»", "type": "keyword", "subtype": "смегма", "goal": 1, "bonus": 7
         # Проваленные задачи
         for user_id in leaderboard[chat_id]:
             key = f"{chat_id}:{user_id}"
