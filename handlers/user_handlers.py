@@ -202,3 +202,8 @@ async def show_leaderboard_private(update: Update, context: ContextTypes.DEFAULT
 
     text = utils.format_leaderboard(leaderboard[chat_id])
     await update.message.reply_text(text, parse_mode="Markdown")
+
+async def version_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != "private":
+        return
+    await update.message.reply_text(f"🤖 Версія бота: {config.BOT_VERSION}")
