@@ -108,7 +108,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         f"🙎‍♂️ Ваш профіль\n\n"
-        f"{medals} {utils.safe_username(update.effective_user.first_name)}\n"
+        f"{medals} \u200E{utils.safe_username(update.effective_user.first_name)}\n"
         f"🔢 Усього сантиметрів: {total_points} см\n"
         f"✅ Завдань виконано: {lifetime.get('total_tasks_completed', 0)}\n"
         f"❌ Завдань пропущено: {lifetime.get('failed_tasks', 0)}\n"
@@ -173,7 +173,7 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Серія: {stats.get('streak_max', 0)} днів"
         )
         points = winner.get("points", 0)
-        text += f"\u200E{emoji} {name} — {points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
+        text += f"\u200E{emoji} {name} — \u200E{points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
 
     scores = matched_season.get("scores", {})
     if scores and user_id in scores:
