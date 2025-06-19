@@ -71,8 +71,10 @@ async def leave(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_lifetime["total_points"] += leaderboard_user.get("points", 0)
 
         lb_medals = leaderboard_user.get("medals", {})
+        user_lifetime.setdefault("medals", {})
         for medal, count in lb_medals.items():
             user_lifetime["medals"][medal] = user_lifetime["medals"].get(medal, 0) + count
+
         
         data_manager.save_json(lifetime, config.LIFETIME_FILE)
 
@@ -192,9 +194,9 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def show_leaderboard_private(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.chat.type != "private":
-        return  # только в ЛС
+        return
 
-    data = load_json(LEADERBOARD_FILE)
+    data = data_manager.load_json(LEADERBOARD_FILE)
     chat_id = next(iter(data), None)
 
     if not chat_id or chat_id not in data:
