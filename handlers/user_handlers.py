@@ -42,7 +42,7 @@ async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data[chat_id][user_id] = {
         "name": user.first_name, "points": points,
-        "last_delta": 0, "medals": medals
+        "last_delta": 0
     }
     data_manager.save_json(data, config.LEADERBOARD_FILE)
     await update.message.reply_text(f"\u200E{user.first_name} приєднався до гри! Песюн: {points} см")
