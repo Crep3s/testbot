@@ -196,7 +196,7 @@ async def show_leaderboard_private(update: Update, context: ContextTypes.DEFAULT
     if update.message.chat.type != "private":
         return
 
-    data = data_manager.load_json(LEADERBOARD_FILE)
+    data = data_manager.load_json(config.LEADERBOARD_FILE)
     chat_id = next(iter(data), None)
 
     if not chat_id or chat_id not in data:
