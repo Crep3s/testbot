@@ -189,3 +189,23 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(text, reply_markup=utils.get_main_keyboard())
     return ConversationHandler.END
+
+async def show_leaderboard_private(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.chat.type != "private":
+        return  # только в ЛС
+
+    data = load_json(LEADERBOARD_FILE)
+    chat_id = next(iter(data), None)
+
+    if not chat_id or chat_id not in data:
+        await update.message.reply_text("Таблиця лідерів поки порожня.")
+        return
+
+    leaderboard = sorted(data[chat_id].items(), key=lambda x: x[1]["points"], reverse=True)
+    text = "🏆 *Таблиця лідерів:*\n\n"
+    for i, (user_id, user_data) in enumerate(leaderboard[:10], 1):
+        name = user_data.get("name", "Unknown")
+        points = user_data.get("points", 0)
+        text += f"{i}. {name} — {points} балів\n"
+
+    await update.message.reply_markdown(text)
