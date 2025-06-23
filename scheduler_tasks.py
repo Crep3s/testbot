@@ -38,7 +38,7 @@ async def send_daily_task(app):
        # {"description": "Відправити стікер", "type": "sticker", "goal": 1, "bonus": 7},
        # {"description": "Надіслати повідомлення з емодзі 😈", "type": "emoji", "goal": 1, "emoji": "😈", "bonus": 7},
        # {"description": "Надіслати повідомлення з емодзі 🥵", "type": "emoji", "goal": 1, "emoji": "🥵", "bonus": 7},
-       # {"description": "Надіслати повідомлення з емодзі 🤯", "type": "emoji", "goal": 1, "emoji": "🤯", "bonus": 7},
+        {"description": "Надіслати повідомлення з емодзі 🤯", "type": "emoji", "goal": 1, "emoji": "🤯", "bonus": 7}#,
        # {"description": "Відправити хоча б одне фото", "type": "photo", "goal": 1, "bonus": 10},
        # {"description": "Надіслати відео", "type": "video", "goal": 1, "bonus": 15},
        # {"description": "Надіслати GIF", "type": "animation", "goal": 1, "bonus": 12},
@@ -47,12 +47,15 @@ async def send_daily_task(app):
        # {"description": "Надіслати повідомлення довжиною понад 30 символів", "type": "long_message", "goal": 1, "bonus": 10},
        # {"description": "Надіслати відповідь на чуже повідомлення", "type": "reply", "goal": 1, "bonus": 10},
        # {"description": "Надіслати зображення з підписом", "type": "photo_with_caption", "goal": 1, "bonus": 15},
-        {"description": "Поділитися геолокацією (будь-якою)", "type": "location", "goal": 1, "bonus": 10}
+       # {"description": "Поділитися геолокацією (будь-якою)", "type": "location", "goal": 1, "bonus": 10}
     ]
 
     for chat_id_str in leaderboard:
         chat_id = str(chat_id_str)
-        task = random.choice(task_list)
+        previous_task_type = tasks.get(chat_id, {}).get("type")
+        available_tasks = [t for t in task_list if t["type"] != previous_task_type]
+        task = random.choice(available_tasks or task_list)  # якщо всі були одного типу
+
         # Проваленные задачи
         for user_id in leaderboard[chat_id]:
             key = f"{chat_id}:{user_id}"
@@ -60,7 +63,7 @@ async def send_daily_task(app):
                 game_logic.update_lifetime_stats(user_id, "failed_tasks")
 
         tasks[chat_id] = task
-        
+        tasks[chat_id]["last_type"] = task["type"]
         # Очистка прогресса
         keys_to_delete = [k for k in progress if k.startswith(f"{chat_id}:")]
         for k in keys_to_delete: del progress[k]
@@ -70,7 +73,6 @@ async def send_daily_task(app):
         
         leaderboard_text = utils.format_leaderboard(leaderboard[chat_id])
         task_text = f"\n\n🎯 *Завдання дня:*\n_{task['description']}_\nБонус: *{task['bonus']} см*"
-        
         try:
             await app.bot.send_message(chat_id=int(chat_id), text=leaderboard_text + task_text, parse_mode='Markdown')
         except Exception as e:
