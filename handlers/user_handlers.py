@@ -185,7 +185,7 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ended_at_iso = matched_season.get("ended_at")
     if ended_at_iso:
         try:
-            ended_dt = datetime.fromisoformat(ended_at_iso).astimezone(TIMEZONE)
+            ended_dt = datetime.fromisoformat(ended_at_iso).astimezone(config.TIMEZONE)
             ended_fmt = ended_dt.strftime("%d.%m.%Y %H:%M")
             text += f"\n📅 Завершено: {ended_fmt}"
         except ValueError: pass
