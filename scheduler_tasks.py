@@ -157,7 +157,16 @@ async def reset_season(app):
         seasons[chat_id]["current_season"] = current_season_num
         seasons[chat_id]["history"].append(season_data)
         await app.bot.send_message(chat_id=int(chat_id), text=text)
+    # Очистка кешу сезону для гравців, які не були в сезоні
+    season_cache = data_manager.load_json(config.SEASON_CACHE_FILE)
+    for chat_id_str in leaderboard.keys():
+        chat_id = str(chat_id_str)
+        if chat_id in season_cache:
+            for uid in list(season_cache[chat_id].keys()):
+                if uid not in leaderboard[chat_id]:  # якщо гравець не був у сезоні
+                    del season_cache[chat_id][uid]
 
+    data_manager.save_json(season_cache, config.SEASON_CACHE_FILE)
     data_manager.save_json(leaderboard, config.LEADERBOARD_FILE)
     data_manager.save_json(seasons, config.SEASONS_FILE)
     data_manager.save_json(inventory, config.INVENTORY_FILE)
