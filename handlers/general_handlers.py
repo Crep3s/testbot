@@ -41,21 +41,23 @@ async def track_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     new_progress = current_progress
     msg = update.message
-    
+    text_or_caption = msg.text or msg.caption or ""
+
     if task["type"] == "messages": new_progress += 1
     elif task["type"] == "voice" and msg.voice and msg.voice.duration >= task["goal"]: new_progress = task["goal"]
     elif task["type"] == "video_note" and msg.video_note and msg.video_note.duration >= task["goal"]: new_progress = task["goal"]
     elif task["type"] == "media" and (msg.photo or msg.video or msg.document): new_progress += 1
     elif task["type"] == "sticker" and msg.sticker: new_progress += 1
-    elif task["type"] == "emoji" and msg.text and task.get("emoji") in msg.text: new_progress += 1
+    elif task["type"] == "emoji" and task.get("emoji") in text_or_caption: new_progress += 1
     elif task["type"] == "photo" and msg.photo: new_progress = task["goal"]
     elif task["type"] == "video" and msg.video: new_progress += 1
     elif task["type"] == "animation" and msg.animation: new_progress = task["goal"]
-    elif task["type"] == "question" and msg.text and "?" in msg.text: new_progress += 1
-    elif task["type"] == "keyword" and msg.text and task.get("subtype") in msg.text.lower(): new_progress = task["goal"]
-    elif task["type"] == "long_message" and msg.text and len(msg.text) > 30: new_progress = task["goal"]
+    elif task["type"] == "question" and "?" in text_or_caption: new_progress += 1
+    elif task["type"] == "keyword" and task.get("subtype") in text_or_caption.lower(): new_progress = task["goal"]
+    elif task["type"] == "long_message" and len(text_or_caption) > 30: new_progress = task["goal"]
     elif task["type"] == "reply" and msg.reply_to_message: new_progress += 1
     elif task["type"] == "photo_with_caption" and msg.photo and msg.caption: new_progress = task["goal"]
+    elif task["type"] == "location" and msg.location: new_progress = task["goal"]
     
     progress[key] = min(new_progress, task["goal"])
     data_manager.save_json(progress, config.PROGRESS_FILE)
