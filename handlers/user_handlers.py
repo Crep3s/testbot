@@ -168,8 +168,8 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         item = config.ITEM_CATALOG.get(config.ITEM_REWARDS.get(winner["medal"]), {"name": "Невідомий приз"})
         stats = winner.get("stats", {})
         stats_summary = (
-            f"  🧾 Завдань: {stats.get('total_tasks_completed', 0)} | "
-            f"Днів активності: {stats.get('days_played', 0)} | "
+            f"Виконаних завдань: {stats.get('total_tasks_completed', 0)}\n"
+            f"Днів активності: {stats.get('days_played', 0)}\n"
             f"Серія: {stats.get('streak_max', 0)} днів"
         )
         points = winner.get("points", 0)
