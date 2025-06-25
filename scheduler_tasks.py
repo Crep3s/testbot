@@ -32,7 +32,7 @@ async def send_daily_task(app):
     
     task_list = [
         {"description": "Відправити 3 повідомлення", "type": "messages", "goal": 3, "bonus": 10},
-        {"description": "Відправити голосове повідомлення тривалістю не менше 10 секунд", "type": "voice", "goal": 10, "bonus": 15},
+        {"description": "Відправити голосове повідомлення тривалістю не менше 5 секунд", "type": "voice", "goal": 5, "bonus": 15},
         {"description": "Відправити відеоповідомлення тривалістю не менше 5 секунд", "type": "video_note", "goal": 5, "bonus": 15},
         {"description": "Відправити будь який медіафайл", "type": "media", "goal": 1, "bonus": 10},
         {"description": "Відправити стікер", "type": "sticker", "goal": 1, "bonus": 7},
