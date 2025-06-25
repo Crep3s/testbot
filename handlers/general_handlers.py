@@ -66,4 +66,5 @@ async def track_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         leaderboard[chat_id][user_id]["points"] += task.get("bonus", 0)
         data_manager.save_json(leaderboard, config.LEADERBOARD_FILE)
         game_logic.update_lifetime_stats(user_id, "total_tasks_completed")
+        game_logic.add_diamonds(user_id, 25)
         await add_reaction_to_message(msg.chat_id, msg.message_id, "👍", context)
