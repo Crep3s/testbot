@@ -138,9 +138,9 @@ async def reset_season(app):
             })
             emoji = config.MEDAL_EMOJIS.get(medal, "")
             stats_summary = (
-                f"  🧾 Завдань: {stats['total_tasks_completed']} | "
-                f"Днів активності: {stats['days_played']} | "
-                f"Серія: {stats['streak_max']} днів"
+                f"Виконаних завдань: {stats.get('total_tasks_completed', 0)}\n"
+                f"Днів активності: {stats.get('days_played', 0)}\n"
+                f"Серія: {stats.get('streak_max', 0)} днів"
             )
             points = user.get("points", 0)
             text += f"\u200E{emoji} \u200E{user['name']} — \u200E{points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
