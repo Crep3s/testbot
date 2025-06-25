@@ -79,7 +79,7 @@ async def grant_diamonds(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if amount <= 0:
         await update.message.reply_text("❌ Кількість має бути позитивною.")
         return
-
+    name = utils.safe_username(user_data.get("name", "Гравець"))
     add_diamonds(user_id, amount)
     await update.message.reply_text(f"\u200E{name}, тобі нараховано 💎 {amount} алмазів")
 
