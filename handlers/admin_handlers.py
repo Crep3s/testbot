@@ -1,7 +1,7 @@
 from telegram import Update, InputFile
 from telegram.ext import ContextTypes
 from telegram.constants import ChatType
-
+from game_logic import add_diamonds
 import config
 import data_manager
 import utils
@@ -60,6 +60,28 @@ async def modify_points(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if msg: await context.bot.send_message(chat_id=int(chat_id), text=msg)
     else:
         await update.message.reply_text("Гравець не знайдений у таблиці цього чату.")
+
+async def grant_diamonds(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in config.ADMIN_IDS:
+        return
+
+    if len(context.args) != 2:
+        await update.message.reply_text("Використання: /adddiamonds <user_id> <кількість>")
+        return
+
+    user_id, amount_str = context.args
+    try:
+        amount = int(amount_str)
+    except ValueError:
+        await update.message.reply_text("❌ Неправильне число.")
+        return
+
+    if amount <= 0:
+        await update.message.reply_text("❌ Кількість має бути позитивною.")
+        return
+
+    add_diamonds(user_id, amount)
+    await update.message.reply_text(f"💎 {amount} алмазів нараховано користувачу {user_id}.")
 
 async def admin_send_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in config.ADMIN_IDS: return
