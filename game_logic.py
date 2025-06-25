@@ -7,7 +7,7 @@ def update_lifetime_stats(user_id, key, increment=1):
     lifetime = data_manager.load_json(config.LIFETIME_FILE)
     user = lifetime.setdefault(str(user_id), {
         "tasks": 0, "seasons": [], "days_played": 0, "current_streak": 0,
-        "streak_max": 0, "reply_count": 0, "failed_tasks": -1, "total_tasks_completed": 0
+        "streak_max": 0, "reply_count": 0, "failed_tasks": 0, "total_tasks_completed": 0, "diamonds": 0
     })
 
     if key == "date_check":
