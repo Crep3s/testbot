@@ -105,11 +105,12 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     total_past_points = lifetime.get("total_points", 0)
     total_points = total_past_points + season_points
     medals = utils.format_medals(leaderboard.get(user_id, {}).get("medals", lifetime.get("medals", {})))
-
+    total_diamonds = lifetime.get("total_diamonds", 0)
     text = (
         f"🙎‍♂️ Ваш профіль\n\n"
         f"{medals} \u200E{utils.safe_username(update.effective_user.first_name)}\n"
         f"🔢 Усього сантиметрів: {total_points} см\n"
+        f"💎 Алмазів зароблено всього: {total_diamonds}\n"
         f"✅ Завдань виконано: {lifetime.get('total_tasks_completed', 0)}\n"
         f"❌ Завдань пропущено: {lifetime.get('failed_tasks', 0)}\n"
         f"📅 Днів активності: {lifetime.get('days_played', 0)}\n"
