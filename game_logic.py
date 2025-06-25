@@ -6,8 +6,16 @@ import config
 def update_lifetime_stats(user_id, key, increment=1):
     lifetime = data_manager.load_json(config.LIFETIME_FILE)
     user = lifetime.setdefault(str(user_id), {
-        "tasks": 0, "seasons": [], "days_played": 0, "current_streak": 0,
-        "streak_max": 0, "reply_count": 0, "failed_tasks": 0, "total_tasks_completed": 0, "diamonds": 0
+        "tasks": 0,
+        "seasons": [],
+        "days_played": 0,
+        "current_streak": 0,
+        "streak_max": 0,
+        "reply_count": 0,
+        "failed_tasks": 0,
+        "total_tasks_completed": 0,
+        "diamonds": 0,
+        "total_diamonds": 0
     })
 
     if key == "date_check":
@@ -25,6 +33,18 @@ def update_lifetime_stats(user_id, key, increment=1):
         user[key] = user.get(key, 0) + increment
 
     data_manager.save_json(lifetime, config.LIFETIME_FILE)
+
+
+def add_diamonds(user_id, amount):
+    lifetime = data_manager.load_json(config.LIFETIME_FILE)
+    user = lifetime.setdefault(str(user_id), {
+        "diamonds": 0,
+        "total_diamonds": 0
+    })
+    user["diamonds"] = user.get("diamonds", 0) + amount
+    user["total_diamonds"] = user.get("total_diamonds", 0) + amount
+    data_manager.save_json(lifetime, config.LIFETIME_FILE)
+
 
 def calculate_deltas(current, previous):
     for chat_id in current:
