@@ -43,6 +43,7 @@ async def main():
     # Админские команды
     app.add_handler(CommandHandler("addpoints", admin_handlers.modify_points))
     app.add_handler(CommandHandler("additem", admin_handlers.add_item))
+    app.add_handler(CommandHandler("adddiamonds", admin_handlers.grant_diamonds))
     app.add_handler(CommandHandler("send", admin_handlers.admin_send_command))
     app.add_handler(CommandHandler("backup", admin_handlers.backup_command))
     app.add_handler(MessageHandler(filters.Document.ALL & filters.ChatType.PRIVATE, admin_handlers.restore_command))
