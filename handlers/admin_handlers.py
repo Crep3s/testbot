@@ -81,7 +81,7 @@ async def grant_diamonds(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     add_diamonds(user_id, amount)
-    await update.message.reply_text(f"💎 {amount} алмазів нараховано користувачу {user_id}.")
+    await update.message.reply_text(f"\u200E{name}, тобі нараховано 💎 {amount} алмазів")
 
 async def admin_send_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in config.ADMIN_IDS: return
