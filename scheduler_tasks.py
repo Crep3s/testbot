@@ -119,7 +119,7 @@ async def reset_season(app):
             lifetime[uid]["medals"][medal] = lifetime[uid]["medals"].get(medal, 0) + 1
 
             # Додати алмази
-            add_diamonds(uid, reward)
+            game_logic.add_diamonds(uid, reward)
 
             # Підрахунок статистики сезону
             lt = lifetime.setdefault(uid, {
