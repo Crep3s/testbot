@@ -81,7 +81,6 @@ async def send_daily_task(app):
 async def reset_season(app):
     leaderboard = data_manager.load_json(config.LEADERBOARD_FILE)
     seasons = data_manager.load_json(config.SEASONS_FILE)
-    inventory = data_manager.load_json(config.INVENTORY_FILE)
     lifetime = data_manager.load_json(config.LIFETIME_FILE)
     season_start = data_manager.load_json(config.SEASON_START_SNAPSHOT_FILE)
 
@@ -92,27 +91,37 @@ async def reset_season(app):
                 "current_season": 0,
                 "history": []
             }
+
         current_season_num = seasons[chat_id]["current_season"] + 1
         scores = {uid: {"points": u.get("points", 0), "name": u.get("name", "Невідомий")} for uid, u in board.items()}
         sorted_scores = sorted(scores.items(), key=lambda item: item[1]["points"], reverse=True)
         
-        season_data = {"season": current_season_num, "ended_at": datetime.now(timezone.utc).isoformat(), "winners": [], "scores": scores}
-        
+        season_data = {
+            "season": current_season_num,
+            "ended_at": datetime.now(config.TIMEZONE).isoformat(),
+            "winners": [],
+            "scores": scores
+        }
+
         text = f"🏁 Сезон {current_season_num} завершено!\n\nТоп-3 песюна:\n"
         top_players = sorted_scores[:3]
         snapshot = season_start.get(chat_id, {}).get("snapshot", {})
+        medals = ["gold", "silver", "bronze"]
 
         for i, (uid, user_info) in enumerate(top_players):
-            medal = ["gold", "silver", "bronze"][i]
+            reward = config.DIAMOND_REWARDS[i]
+            medal = medals[i]
             user = board.get(uid)
             if not user: continue
 
+            # Медалі (як до цього)
             lifetime.setdefault(uid, {}).setdefault("medals", {})
             lifetime[uid]["medals"][medal] = lifetime[uid]["medals"].get(medal, 0) + 1
-            item_id = config.ITEM_REWARDS[medal]
-            inventory.setdefault(uid, []).append(item_id)
-            item = config.ITEM_CATALOG[item_id]
 
+            # Додати алмази
+            add_diamonds(uid, reward)
+
+            # Підрахунок статистики сезону
             lt = lifetime.setdefault(uid, {
                 "total_tasks_completed": 0,
                 "days_played": 0,
@@ -129,6 +138,7 @@ async def reset_season(app):
                 "days_played": lt.get("days_played", 0) - prev.get("days_played", 0),
                 "streak_max": lt.get("streak_max", 0)
             }
+
             season_data["winners"].append({
                 "user_id": uid,
                 "name": user.get("name", "Невідомий"),
@@ -136,19 +146,22 @@ async def reset_season(app):
                 "stats": stats,
                 "points": user.get("points", 0)
             })
+
             emoji = config.MEDAL_EMOJIS.get(medal, "")
+            points = user.get("points", 0)
             stats_summary = (
                 f"Виконаних завдань: {stats.get('total_tasks_completed', 0)}\n"
                 f"Днів активності: {stats.get('days_played', 0)}\n"
                 f"Серія: {stats.get('streak_max', 0)} днів"
             )
-            points = user.get("points", 0)
-            text += f"\u200E{emoji} \u200E{user['name']} — \u200E{points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
-    
+            text += f"\u200E{emoji} \u200E{user['name']} — \u200E{points} см. Нагорода: 💎 {reward} алмазів\n{stats_summary}\n\n"
+
+        # Зберігаємо загальні очки
         for uid, user in board.items():
             lifetime.setdefault(uid, {}).setdefault("total_points", 0)
             lifetime[uid]["total_points"] += user.get("points", 0)
 
+        # Обнулення
         for user in board.values():
             user["points"] = 0
             user["last_delta"] = 0
@@ -156,18 +169,19 @@ async def reset_season(app):
 
         seasons[chat_id]["current_season"] = current_season_num
         seasons[chat_id]["history"].append(season_data)
+
         await app.bot.send_message(chat_id=int(chat_id), text=text)
-    # Очистка кешу сезону для гравців, які не були в сезоні
+
+    # Очищення кешу
     season_cache = data_manager.load_json(config.SEASON_CACHE_FILE)
     for chat_id_str in leaderboard.keys():
         chat_id = str(chat_id_str)
         if chat_id in season_cache:
             for uid in list(season_cache[chat_id].keys()):
-                if uid not in leaderboard[chat_id]:  # якщо гравець не був у сезоні
+                if uid not in leaderboard[chat_id]:
                     del season_cache[chat_id][uid]
 
     data_manager.save_json(season_cache, config.SEASON_CACHE_FILE)
     data_manager.save_json(leaderboard, config.LEADERBOARD_FILE)
     data_manager.save_json(seasons, config.SEASONS_FILE)
-    data_manager.save_json(inventory, config.INVENTORY_FILE)
     data_manager.save_json(lifetime, config.LIFETIME_FILE)
