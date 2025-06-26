@@ -63,8 +63,10 @@ async def track_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data_manager.save_json(progress, config.PROGRESS_FILE)
 
     if progress[key] >= task["goal"]:
+        lifetime = data_manager.load_json(config.LIFETIME_FILE)
         leaderboard[chat_id][user_id]["points"] += task.get("bonus", 0)
         data_manager.save_json(leaderboard, config.LEADERBOARD_FILE)
         game_logic.update_lifetime_stats(user_id, "total_tasks_completed")
-        game_logic.add_diamonds(user_id, 25)
+        game_logic.add_diamonds(user_id, 25, lifetime)
+        data_manager.save_json(lifetime, config.LIFETIME_FILE)
         await add_reaction_to_message(msg.chat_id, msg.message_id, "👍", context)
