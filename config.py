@@ -32,11 +32,7 @@ ITEM_CATALOG = {
     "birthday_hat": {"name": "🎉Святкова шапка", "description": "null"}
 }
 
-ITEM_REWARDS = {
-    "gold": "golden_penis",
-    "silver": "pink_dildo",
-    "bronze": "anal_ball"
-}
+DIAMOND_REWARDS = [1500, 1000, 750]
 
 MEDAL_EMOJIS = {
     "gold": "🥇",
