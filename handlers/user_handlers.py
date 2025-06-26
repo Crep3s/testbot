@@ -147,11 +147,11 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not num_str.isdigit() or int(num_str) <= 0:
         await update.message.reply_text("Некоректний номер.", reply_markup=utils.get_main_keyboard())
         return ConversationHandler.END
-    
+
     num = int(num_str)
     user_id = str(update.effective_user.id)
     chat_id = str(config.GROUP_CHAT_ID)
-    
+
     history = data_manager.load_json(config.SEASONS_FILE).get(chat_id, {}).get("history", [])
     if not history:
         await update.message.reply_text("Історія сезонів порожня.", reply_markup=utils.get_main_keyboard())
@@ -163,10 +163,15 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     text = f"🏁 Сезон {num}\n\nТоп-3 песюна:\n"
-    for winner in matched_season["winners"]:
+    medals = ["gold", "silver", "bronze"]
+    diamond_rewards = config.DIAMOND_REWARDS if hasattr(config, "DIAMOND_REWARDS") else [1500, 1000, 750]
+
+    for i, winner in enumerate(matched_season["winners"]):
         name = utils.safe_username(winner["name"])
-        emoji = config.MEDAL_EMOJIS.get(winner["medal"], "")
-        item = config.ITEM_CATALOG.get(config.ITEM_REWARDS.get(winner["medal"]), {"name": "Невідомий приз"})
+        medal = winner["medal"]
+        emoji = config.MEDAL_EMOJIS.get(medal, "")
+        reward = diamond_rewards[i] if i < len(diamond_rewards) else 0
+
         stats = winner.get("stats", {})
         stats_summary = (
             f"Виконаних завдань: {stats.get('total_tasks_completed', 0)}\n"
@@ -174,7 +179,7 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Серія: {stats.get('streak_max', 0)} днів"
         )
         points = winner.get("points", 0)
-        text += f"\u200E{emoji} {name} — \u200E{points} см. Нагорода: {item['name']}\n{stats_summary}\n\n"
+        text += f"\u200E{emoji} {name} — \u200E{points} см. Нагорода: 💎 {reward} алмазів\n{stats_summary}\n\n"
 
     scores = matched_season.get("scores", {})
     if scores and user_id in scores:
@@ -182,14 +187,15 @@ async def season_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_place = next(((idx, data) for idx, (uid, data) in enumerate(sorted_scores, 1) if uid == user_id), None)
         if user_place:
             text += f"\n📌 Ви зайняли {user_place[0]}-е місце з песюном {user_place[1].get('points', 0)} см."
-    
+
     ended_at_iso = matched_season.get("ended_at")
     if ended_at_iso:
         try:
             ended_dt = datetime.fromisoformat(ended_at_iso).astimezone(config.TIMEZONE)
             ended_fmt = ended_dt.strftime("%d.%m.%Y %H:%M")
             text += f"\n📅 Завершено: {ended_fmt}"
-        except ValueError: pass
+        except ValueError:
+            pass
 
     await update.message.reply_text(text, reply_markup=utils.get_main_keyboard())
     return ConversationHandler.END
