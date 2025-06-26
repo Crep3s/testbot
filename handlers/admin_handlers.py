@@ -79,11 +79,13 @@ async def grant_diamonds(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if amount <= 0:
         await update.message.reply_text("❌ Кількість має бути позитивною.")
         return
+    lifetime = data_manager.load_json(config.LIFETIME_FILE)
     chat_id = str(update.effective_chat.id)
     leaderboard = data_manager.load_json(config.LEADERBOARD_FILE)
     user_data = leaderboard[chat_id][user_id]
     name = utils.safe_username(user_data.get("name", "Гравець"))
-    add_diamonds(user_id, amount)
+    add_diamonds(user_id, amount, lifetime)
+    data_manager.save_json(lifetime, config.LIFETIME_FILE)
     await update.message.reply_text(f"\u200E{name}, тобі нараховано 💎 {amount} алмазів")
 
 async def admin_send_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
