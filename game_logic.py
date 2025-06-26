@@ -35,15 +35,14 @@ def update_lifetime_stats(user_id, key, increment=1):
     data_manager.save_json(lifetime, config.LIFETIME_FILE)
 
 
-def add_diamonds(user_id, amount):
-    lifetime = data_manager.load_json(config.LIFETIME_FILE)
+def add_diamonds(user_id, amount, lifetime):
     user = lifetime.setdefault(str(user_id), {
         "diamonds": 0,
         "total_diamonds": 0
     })
     user["diamonds"] = user.get("diamonds", 0) + amount
     user["total_diamonds"] = user.get("total_diamonds", 0) + amount
-    data_manager.save_json(lifetime, config.LIFETIME_FILE)
+
 
 
 def calculate_deltas(current, previous):
